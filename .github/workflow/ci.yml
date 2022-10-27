@@ -1,7 +1,7 @@
 name: Run the CI
 on:
   push:
-    branches: [main]
+    branches: [main, feat/add-ci]
   pull_request:
 
 jobs:
