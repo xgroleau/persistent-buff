@@ -1,15 +1,15 @@
 [package]
-name = "persistant-buff"
+name = "persistent-buff"
 version = "0.1.0"
 edition = "2021"
 authors = ["xgroleau <xgroleau@gmail.ca>"]
-repository = "https://github.com/xgroleau/persistant-buff"
+repository = "https://github.com/xgroleau/persistent-buff"
 license = "MIT OR Apache-2.0"
-homepage= "https://github.com/xgroleau/persistant-buff"
-description = "A no-std toolkit to describe the register of your peropherals to ease driver development"
-documentation = "https://docs.rs/persistant-buff"
+homepage= "https://github.com/xgroleau/persistent-buff"
+description = "A buffer that stays persistent in ram between boots"
+documentation = "https://docs.rs/persistent-buff"
 readme = "README.md"
-keywords = ["no-std", "persistant"]
+keywords = ["no-std", "persistent"]
 categories = ["embedded", "no-std"]
 
 exclude = [

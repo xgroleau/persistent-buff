@@ -6,13 +6,13 @@ use panic_probe as _;
 
 #[cortex_m_rt::entry]
 fn main() -> ! {
-    let mut pbuff = persistant_buff::PersistantBuff::take_managed().unwrap();
+    let mut pbuff = persistent_buff::PersistentBuff::take_managed().unwrap();
 
     // Verify the address
-    let addr = unsafe { persistant_buff::PersistantBuff::steal() as *const [u8] as *const u8 };
+    let addr = unsafe { persistent_buff::PersistentBuff::steal() as *const [u8] as *const u8 };
     defmt::info!("Address {}", addr);
 
-    // Trivial way to initialize it to fill it with 0
+    // Trivial way to initialize is to fill it with 0
     let buff = pbuff.validate(|b| b.fill(0));
 
     buff[0] = (buff[0] % 255) + 1;
