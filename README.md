@@ -1,6 +1,6 @@
 # persistent-buff
 
-[![crates.io](https://img.shields.io/crates/v/device-register)](https://crates.io/crates/device-register) [![documentation](https://docs.rs/device-register/badge.svg)](https://docs.rs/device-register)
+[![crates.io](https://img.shields.io/crates/v/persistent-buff)](https://crates.io/crates/persistent-buff) [![documentation](https://docs.rs/persistent-buff/badge.svg)](https://docs.rs/persistent-buff)
 
 A buffer that persists between boot.
 Inspired by [panic-persist](https://github.com/jamesmunns/panic-persist)
