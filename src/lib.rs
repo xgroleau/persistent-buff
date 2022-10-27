@@ -71,11 +71,11 @@
 
 use core::sync::atomic::{AtomicBool, Ordering};
 
-const MAGIC_NUMBER: u32 = 0x42069F;
+const MAGIC_NUMBER: u32 = 0xFAB42069;
 static mut PERSISTENT_BUFF_TAKEN: AtomicBool = AtomicBool::new(false);
 
 /// Strut to request the persistent buff and manage it `safely`.
-/// When acquiring the buffer you need to validate it and init it to a known sate
+/// When acquiring the buffer you need to validate/init it to a known sate.
 pub struct PersistentBuff {
     magic: *mut u32,
     buff: &'static mut [u8],
@@ -83,8 +83,8 @@ pub struct PersistentBuff {
 
 impl PersistentBuff {
     /// Take a managed version fo the persistent buff.
-    /// Allow to check if the buffer is valid or not before usage
-    /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker
+    /// Allow to check if the buffer is valid or not before usage.
+    /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker.
     pub fn take_managed() -> Option<Self> {
         Self::take().map(|b| Self {
             magic: b.as_mut_ptr().cast::<u32>(),
@@ -92,12 +92,12 @@ impl PersistentBuff {
         })
     }
 
-    /// Steal a managed version for the persistent buff without check
+    /// Steal a managed version for the persistent buff without check.
     /// See [Self::take_managed]
     ///
     /// # Safety
     /// Calling this function could allow to have two mutable reference to the same buffer.
-    /// Make sure to only have one reference at a time to avoid multiple mutable reference
+    /// Make sure to only have one reference at a time to avoid multiple mutable reference.
     pub unsafe fn steal_managed() -> Self {
         let b = Self::steal();
         Self {
@@ -106,7 +106,7 @@ impl PersistentBuff {
         }
     }
 
-    /// Get the raw persistent buff
+    /// Get the raw persistent slice.
     pub fn take() -> Option<&'static mut [u8]> {
         unsafe {
             if PERSISTENT_BUFF_TAKEN.swap(true, Ordering::Relaxed) {
@@ -117,12 +117,12 @@ impl PersistentBuff {
         }
     }
 
-    /// Steal the raw persistent buff.
+    /// Steal the raw persistent slice.
     /// Ignore if it was already taken or not.
     ///
     /// # Safety
     /// Calling this function could allow to have two mutable reference to the same buffer.
-    /// Make sure to only have one reference at a time to avoid multiple mutable reference
+    /// Make sure to only have one reference at a time to avoid multiple mutable reference.
     pub unsafe fn steal() -> &'static mut [u8] {
         PERSISTENT_BUFF_TAKEN.store(true, Ordering::SeqCst);
         extern "C" {
@@ -136,21 +136,21 @@ impl PersistentBuff {
         core::slice::from_raw_parts_mut(start, len)
     }
 
-    /// Mark the persistent buffer with valid data in it
+    /// Mark the persistent buffer with valid data in it.
     fn mark(&mut self) {
         unsafe {
             *self.magic = MAGIC_NUMBER;
         }
     }
 
-    /// Verify if the persistent buffer has valid data in it
+    /// Verify if the persistent buffer has valid data in it.
     fn check(&self) -> bool {
         unsafe { *self.magic == MAGIC_NUMBER }
     }
 
-    /// Check if the buffer is valid, if not call the provided closure
+    /// Check if the buffer is valid, if not call the provided closure.
     /// Then mark the buffer as valid and initialize it to a known state.
-    /// It's to make sure the data in it is always "valid" and not garbage after a powerloss.
+    /// This is to make sure the data in it is always "valid" and not garbage after a powerloss.
     pub fn validate<F>(&mut self, f: F) -> &mut [u8]
     where
         F: FnOnce(&mut [u8]),
