@@ -81,6 +81,10 @@ impl PersistentBuff {
 
     /// Steal a managed version for the persistent buff without check
     /// See [Self::take_managed]
+    ///
+    /// # Safety
+    /// Calling this function could allow to have two mutable reference to the same buffer.
+    /// Make sure to only have one reference at a time to avoid multiple mutable reference
     pub unsafe fn steal_managed() -> Self {
         let b = Self::steal();
         Self {
@@ -102,6 +106,10 @@ impl PersistentBuff {
 
     /// Steal the raw persistent buff.
     /// Ignore if it was already taken or not.
+    ///
+    /// # Safety
+    /// Calling this function could allow to have two mutable reference to the same buffer.
+    /// Make sure to only have one reference at a time to avoid multiple mutable reference
     pub unsafe fn steal() -> &'static mut [u8] {
         PERSISTENT_BUFF_TAKEN.store(true, Ordering::SeqCst);
         extern "C" {
@@ -112,8 +120,7 @@ impl PersistentBuff {
         let end = &mut _persistent_buff_end as *mut u8;
         let len = end as usize - start as usize;
 
-        let slice = core::slice::from_raw_parts_mut(start, len);
-        slice
+        core::slice::from_raw_parts_mut(start, len)
     }
 
     /// Mark the persistent buffer with valid data in it
