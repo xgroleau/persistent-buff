@@ -11,6 +11,7 @@ documentation = "https://docs.rs/persistent-buff"
 readme = "README.md"
 keywords = ["no-std", "persistent"]
 categories = ["embedded", "no-std"]
+rust-verison = "1.56.1"
 
 exclude = [
     "flake.nix",
