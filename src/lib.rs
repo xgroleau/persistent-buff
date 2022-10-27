@@ -23,7 +23,8 @@
 //!   RAM : ORIGIN = 0x20000000, LENGTH = 128K
 //! }
 //! ```
-//! `memory.x` file after modification to hold a 1K region:
+//!
+//! memory.x` file after modification to hold a 1K region:
 //! ``` ignore
 //! MEMORY
 //! {
