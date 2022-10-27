@@ -2,11 +2,22 @@
 name = "persistant-buff"
 version = "0.1.0"
 edition = "2021"
+authors = ["xgroleau <xgroleau@gmail.ca>"]
+repository = "https://github.com/xgroleau/persistant-buff"
+license = "MIT OR Apache-2.0"
+homepage= "https://github.com/xgroleau/persistant-buff"
+description = "A no-std toolkit to describe the register of your peropherals to ease driver development"
+documentation = "https://docs.rs/persistant-buff"
+readme = "README.md"
+keywords = ["no-std", "persistant"]
+categories = ["embedded", "no-std"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+exclude = [
+    "flake.nix",
+    "flake.lock",
+    ".envrc",
+]
 
-[dependencies]
-critical-section = "1.1.1"
 
 [dev-dependencies]
 panic-probe = { version = "0.3", features = ["print-defmt"] }
