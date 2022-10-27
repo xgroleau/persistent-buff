@@ -84,7 +84,7 @@ pub struct PersistentBuff {
 impl PersistentBuff {
     /// Take a managed version fo the persistent buff.
     /// Allow to check if the buffer is valid or not before usage
-    /// Note that vs the [Self::take] function, you will lose sii
+    /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker
     pub fn take_managed() -> Option<Self> {
         Self::take().map(|b| Self {
             magic: b.as_mut_ptr().cast::<u32>(),
