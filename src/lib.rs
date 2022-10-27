@@ -1,6 +1,6 @@
 //! [![crates.io](https://img.shields.io/crates/v/device-register)](https://crates.io/crates/device-register) [![documentation](https://docs.rs/device-register/badge.svg)](https://docs.rs/device-register)
 //!
-//! A buffer that persists between boot. fasdf
+//! A buffer that persists between boot.
 //! Inspired by [panic-persist](https://github.com/jamesmunns/panic-persist)
 //!
 //! A region in RAM is reseved for this buffer.
