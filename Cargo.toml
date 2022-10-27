@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+critical-section = "1.1.1"
 
 [dev-dependencies]
 panic-probe = { version = "0.3", features = ["print-defmt"] }

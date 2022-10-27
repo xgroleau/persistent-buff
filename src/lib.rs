@@ -44,7 +44,7 @@
 //!
 //! #[entry]
 //! fn main() -> ! {
-//!     let buff = unsafe { persistant_buff::get() };
+//!     let buff = persistant_buff::PersistantBuff::take().unwrap();
 //!     buff[0]++;
 //!     info!("Value is now {}", buff[0]);
 //! }
@@ -53,17 +53,37 @@
 #![no_main]
 #![deny(missing_docs)]
 
-/// Get the persistant buff
-pub unsafe fn get() -> &'static mut [u8] {
-    extern "C" {
-        static mut _persistant_buff_start: u8;
-        static mut _persistant_buff_end: u8;
+use core::sync::atomic::{AtomicBool, Ordering};
+
+static mut PERSISTANT_BUFF_TAKEN: AtomicBool = AtomicBool::new(false);
+
+/// Strut to request the persistant buff
+pub struct PersistantBuff();
+impl PersistantBuff {
+    /// Get the persistant buff
+    pub fn take() -> Option<&'static mut [u8]> {
+        unsafe {
+            if PERSISTANT_BUFF_TAKEN.swap(true, Ordering::Relaxed) {
+                None
+            } else {
+                Some(Self::steal())
+            }
+        }
     }
 
-    let start = &mut _persistant_buff_start as *mut u8;
-    let end = &mut _persistant_buff_end as *mut u8;
-    let len = end as usize - start as usize;
+    /// Steal the persistant buff.
+    /// Ignore if it was already taken .
+    pub unsafe fn steal() -> &'static mut [u8] {
+        PERSISTANT_BUFF_TAKEN.store(true, Ordering::SeqCst);
+        extern "C" {
+            static mut _persistant_buff_start: u8;
+            static mut _persistant_buff_end: u8;
+        }
+        let start = &mut _persistant_buff_start as *mut u8;
+        let end = &mut _persistant_buff_end as *mut u8;
+        let len = end as usize - start as usize;
 
-    let slice = core::slice::from_raw_parts_mut(start, len);
-    slice
+        let slice = core::slice::from_raw_parts_mut(start, len);
+        slice
+    }
 }
