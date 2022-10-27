@@ -17,17 +17,17 @@ outside of other sections to avoid zero initializations.
 ##### Example
 `memory.x` file before modification:
 
-``` ignore
+```
 MEMORY
 {
   /* NOTE 1 K = 1 KiBi = 1024 bytes */
   FLASH : ORIGIN = 0x00000000, LENGTH = 1024K
   RAM : ORIGIN = 0x20000000, LENGTH = 128K
 }
-```rust
+```
 
-memory.x` file after modification to hold a 1K region:
-``` ignore
+`memory.x` file after modification to hold a 1K region:
+```
 MEMORY
 {
   /* NOTE 1 K = 1 KiBi = 1024 bytes */

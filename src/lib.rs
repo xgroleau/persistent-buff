@@ -15,7 +15,7 @@
 //! #### Example
 //! `memory.x` file before modification:
 //!
-//! ``` ignore
+//! ```text
 //! MEMORY
 //! {
 //!   /* NOTE 1 K = 1 KiBi = 1024 bytes */
@@ -24,8 +24,8 @@
 //! }
 //! ```
 //!
-//! memory.x` file after modification to hold a 1K region:
-//! ``` ignore
+//! `memory.x` file after modification to hold a 1K region:
+//! ```text
 //! MEMORY
 //! {
 //!   /* NOTE 1 K = 1 KiBi = 1024 bytes */
