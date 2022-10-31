@@ -78,7 +78,7 @@ static mut PERSISTENT_BUFF_TAKEN: AtomicBool = AtomicBool::new(false);
 /// Strut to request the persistent buff and manage it `safely`.
 /// When acquiring the buffer you need to validate/init it to a known sate.
 pub struct PersistentBuff {
-    magic: *mut u32,
+    magic: &'static mut [u8],
     buff: &'static mut [u8],
 }
 
@@ -87,9 +87,9 @@ impl PersistentBuff {
     /// Allow to check if the buffer is valid or not before usage.
     /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker.
     pub fn take_managed() -> Option<Self> {
-        Self::take().map(|b| Self {
-            magic: b.as_mut_ptr().cast::<u32>(),
-            buff: &mut b[core::mem::size_of::<u32>()..],
+        Self::take().map(|b| {
+            let (magic, buff) = b.split_at_mut(core::mem::size_of::<u32>());
+            Self { magic, buff }
         })
     }
 
@@ -101,10 +101,8 @@ impl PersistentBuff {
     /// Make sure to only have one reference at a time to avoid multiple mutable reference.
     pub unsafe fn steal_managed() -> Self {
         let b = Self::steal();
-        Self {
-            magic: b.as_mut_ptr().cast::<u32>(),
-            buff: &mut b[core::mem::size_of::<u32>()..],
-        }
+        let (magic, buff) = b.split_at_mut(core::mem::size_of::<u32>());
+        Self { magic, buff }
     }
 
     /// Get the raw persistent slice.
@@ -140,20 +138,23 @@ impl PersistentBuff {
     /// Mark the persistent buffer with valid data in it.
     fn mark(&mut self) {
         unsafe {
-            *self.magic = MAGIC_NUMBER;
+            self.magic
+                .as_mut_ptr()
+                .cast::<u32>()
+                .write_unaligned(MAGIC_NUMBER);
         }
     }
 
     /// Unmark the persistent buffer with valid data in it.
     fn unmark(&mut self) {
         unsafe {
-            *self.magic = 0;
+            self.magic.as_mut_ptr().cast::<u32>().write_unaligned(0);
         }
     }
 
     /// Verify if the persistent buffer has valid data in it.
     pub fn valid(&self) -> bool {
-        unsafe { *self.magic == MAGIC_NUMBER }
+        unsafe { self.magic.as_ptr().cast::<u32>().read_unaligned() == MAGIC_NUMBER }
     }
 
     /// Get the buffer if the data is valid, if not, return None
