@@ -165,6 +165,16 @@ impl PersistentBuff {
         }
     }
 
+    /// Force reset the buffer to a known state via the closure, mark as valid and return the buffer
+    pub fn reset<F>(&mut self, f: F) -> &mut [u8]
+    where
+        F: FnOnce(&mut [u8]),
+    {
+        f(self.buff);
+        self.mark();
+        self.buff
+    }
+
     /// Check if the buffer is valid, if not call the provided closure.
     /// Then mark the buffer as valid and initialize it to a known state.
     /// This is to make sure the data in it is always "valid" and not garbage after a powerloss.
