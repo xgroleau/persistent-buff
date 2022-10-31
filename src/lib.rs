@@ -144,9 +144,25 @@ impl PersistentBuff {
         }
     }
 
+    /// Unmark the persistent buffer with valid data in it.
+    fn unmark(&mut self) {
+        unsafe {
+            *self.magic = 0;
+        }
+    }
+
     /// Verify if the persistent buffer has valid data in it.
-    fn check(&self) -> bool {
+    pub fn valid(&self) -> bool {
         unsafe { *self.magic == MAGIC_NUMBER }
+    }
+
+    /// Get the buffer if the data is valid, if not, return None
+    pub fn get(&mut self) -> Option<&mut [u8]> {
+        if self.valid() {
+            return Some(self.buff);
+        } else {
+            return None;
+        }
     }
 
     /// Check if the buffer is valid, if not call the provided closure.
@@ -156,10 +172,15 @@ impl PersistentBuff {
     where
         F: FnOnce(&mut [u8]),
     {
-        if !self.check() {
+        if !self.valid() {
             f(self.buff)
         }
         self.mark();
         self.buff
+    }
+
+    /// Mark the buffer as invalid
+    pub fn invalidate(&mut self) {
+        self.unmark();
     }
 }
