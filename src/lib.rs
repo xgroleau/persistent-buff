@@ -87,7 +87,7 @@ impl PersistentBuff {
     /// Allow to check if the buffer is valid or not before usage.
     /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker.
     pub fn take_managed() -> Option<Self> {
-        Self::take().map(|b| Self {
+        Self::take_raw().map(|b| Self {
             magic: b[..core::mem::size_of::<u32>()].as_mut_ptr().cast::<u32>(),
             buff: &mut b[core::mem::size_of::<u32>()..],
         })
@@ -108,7 +108,7 @@ impl PersistentBuff {
     }
 
     /// Get the raw persistent slice.
-    pub fn take() -> Option<&'static mut [u8]> {
+    pub fn take_raw() -> Option<&'static mut [u8]> {
         unsafe {
             if PERSISTENT_BUFF_TAKEN.swap(true, Ordering::Relaxed) {
                 None
@@ -154,6 +154,15 @@ impl PersistentBuff {
     /// Verify if the persistent buffer has valid data in it.
     pub fn valid(&self) -> bool {
         unsafe { self.magic.read_unaligned() == MAGIC_NUMBER }
+    }
+
+    /// Take the static buff from the managed buff
+    pub fn take(self) -> Option<&'static mut [u8]> {
+        if self.valid() {
+            return Some(self.buff);
+        } else {
+            return None;
+        }
     }
 
     /// Get the buffer if the data is valid, if not, return None
