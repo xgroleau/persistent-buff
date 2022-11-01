@@ -88,7 +88,7 @@ impl PersistentBuff {
     /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker.
     pub fn take_managed() -> Option<Self> {
         Self::take_raw().map(|b| Self {
-            magic: b[..core::mem::size_of::<u32>()].as_mut_ptr().cast::<u32>(),
+            magic: b.as_mut_ptr().cast::<u32>(),
             buff: &mut b[core::mem::size_of::<u32>()..],
         })
     }
@@ -102,7 +102,7 @@ impl PersistentBuff {
     pub unsafe fn steal_managed() -> Self {
         let b = Self::steal();
         Self {
-            magic: b[..core::mem::size_of::<u32>()].as_mut_ptr().cast::<u32>(),
+            magic: b.as_mut_ptr().cast::<u32>(),
             buff: &mut b[core::mem::size_of::<u32>()..],
         }
     }
