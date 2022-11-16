@@ -1,6 +1,6 @@
 [package]
 name = "persistent-buff"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 authors = ["xgroleau <xgroleau@gmail.ca>"]
 repository = "https://github.com/xgroleau/persistent-buff"
@@ -11,7 +11,7 @@ documentation = "https://docs.rs/persistent-buff"
 readme = "README.md"
 keywords = ["no-std", "persistent"]
 categories = ["embedded", "no-std"]
-rust-verison = "1.56.1"
+rust-verison = "1.57.1"
 
 exclude = [
     "flake.nix",

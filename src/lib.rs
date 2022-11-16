@@ -75,7 +75,7 @@ use core::sync::atomic::{AtomicBool, Ordering};
 const MAGIC_NUMBER: u32 = 0xFAB42069;
 static mut PERSISTENT_BUFF_TAKEN: AtomicBool = AtomicBool::new(false);
 
-/// Strut to request the persistent buff and manage it `safely`.
+/// Strut to request the persistent buff and manage it somewhat "safely".
 /// When acquiring the buffer you need to validate/init it to a known sate.
 pub struct PersistentBuff {
     magic: *mut u32,
@@ -163,6 +163,32 @@ impl PersistentBuff {
         } else {
             return None;
         }
+    }
+
+    /// Force to reset the buffer to a known state via the closure and mark as valid for next boot then
+    /// takes the static buff from the managed buff
+    pub fn take_reset<F>(mut self, f: F) -> &'static mut [u8]
+    where
+        F: FnOnce(&mut [u8]),
+    {
+        f(self.buff);
+        self.mark();
+        self.buff
+    }
+
+    /// Check if the buffer is valid, if not call the provided closure.
+    /// Then mark the buffer as valid and initialize it to a known state.
+    /// This is to make sure the data in it is always "valid" and not garbage after a powerloss.
+    /// Then the static buff is taken from the managed buff
+    pub fn take_validate<F>(mut self, f: F) -> &'static mut [u8]
+    where
+        F: FnOnce(&mut [u8]),
+    {
+        if !self.valid() {
+            f(self.buff)
+        }
+        self.mark();
+        self.buff
     }
 
     /// Get the buffer if the data is valid, if not, return None
