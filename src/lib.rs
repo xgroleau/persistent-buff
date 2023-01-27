@@ -84,8 +84,8 @@ pub struct PersistentBuff {
 
 impl PersistentBuff {
     /// Take a managed version fo the persistent buff.
-    /// Allow to check if the buffer is valid or not before usage.
-    /// Note that vs the [Self::take] function, you will lose some bytes for storage of the marker.
+    /// Allows to check if the buffer is valid or not before usage.
+    /// Note that compared to the [Self::take] function, you will lose some bytes for storage of the marker.
     pub fn take_managed() -> Option<Self> {
         Self::take_raw().map(|b| Self {
             magic: b.as_mut_ptr().cast::<u32>(),
@@ -156,7 +156,7 @@ impl PersistentBuff {
         unsafe { self.magic.read_unaligned() == MAGIC_NUMBER }
     }
 
-    /// Take the static buff from the managed buff
+    /// Take the static internal buffer from the managed buff if valid
     pub fn take(self) -> Option<&'static mut [u8]> {
         if self.valid() {
             return Some(self.buff);
@@ -211,7 +211,7 @@ impl PersistentBuff {
     }
 
     /// Check if the buffer is valid, if not call the provided closure.
-    /// Then mark the buffer as valid and initialize it to a known state.
+    /// Then mark the buffer as valid.
     /// This is to make sure the data in it is always "valid" and not garbage after a powerloss.
     pub fn validate<F>(&mut self, f: F) -> &mut [u8]
     where
